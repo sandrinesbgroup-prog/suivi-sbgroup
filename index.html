@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SB GROUP · Suivi des dossiers</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #F7F4EE; }
+  iframe { border: 0; width: 100%; height: 100%; display: block; }
+</style>
+</head>
+<body>
+<!-- Adresse courte de l'outil (suivi.sbgroup.co). La page ne contient aucune donnée :
+     elle affiche l'appli Google Apps Script et retient sur cet ordinateur le code personnel saisi. -->
+<iframe id="outil" title="Suivi des dossiers" allow="clipboard-write"></iframe>
+<script>
+  var APPLI = 'https://script.google.com/macros/s/AKfycbyLG8_-Tmc7swtv1FVj2Pkaxr6IjyccAw0l_hXguOyNLOfWCMPys3vSR5DimzfrH0-3Jg/exec';
+  var code = '';
+  try { code = localStorage.getItem('sn_code') || ''; } catch (e) {}
+  var d = (location.hash.match(/d=([A-Z0-9-]+)/) || [])[1] || '';
+  var p = [];
+  if (code) p.push('k=' + encodeURIComponent(code));
+  if (d) p.push('d=' + encodeURIComponent(d));
+  document.getElementById('outil').src = APPLI + (p.length ? '?' + p.join('&') : '');
+  // L'outil prévient quand un code est saisi ou oublié.
+  window.addEventListener('message', function (e) {
+    if (!/\.googleusercontent\.com$/.test(new URL(e.origin).hostname)) return;
+    var m = e.data || {};
+    try {
+      if (m.sn === 'code' && /^[A-Z0-9]{6,12}$/.test(m.code)) localStorage.setItem('sn_code', m.code);
+      if (m.sn === 'oubli') localStorage.removeItem('sn_code');
+    } catch (err) {}
+  });
+</script>
+</body>
+</html>
